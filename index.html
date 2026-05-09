@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Groww MF FAQ Assistant</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .app { width: 100%; max-width: 720px; }
+    .header {
+      background: white; border-radius: 16px;
+      padding: 20px 24px; margin-bottom: 16px;
+      border: 1px solid #e8eaed; text-align: center;
+    }
+    .logo-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px; }
+    .groww-logo {
+      width: 28px; height: 28px; background: #00d09c;
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; color: white; font-weight: 700; font-size: 14px;
+    }
+    .app-title { font-size: 20px; font-weight: 600; color: #1a1a2e; }
+    .app-sub { font-size: 13px; color: #666; margin-top: 4px; }
+    .disclaimer {
+      display: inline-block; margin-top: 10px;
+      background: #fff8e1; color: #7a5400;
+      border: 1px solid #ffe082; border-radius: 20px;
+      font-size: 11px; padding: 4px 14px;
+    }
+    .scope {
+      background: white; border-radius: 12px;
+      padding: 12px 18px; margin-bottom: 16px;
+      border: 1px solid #e8eaed;
+      display: flex; flex-wrap: wrap;
+      align-items: center; gap: 8px;
+      font-size: 12px; color: #555;
+    }
+    .scope-label { font-weight: 600; color: #333; }
+    .scope-tag {
+      background: #f0fdf8; border: 1px solid #00d09c44;
+      color: #00836a; border-radius: 20px;
+      padding: 3px 12px; font-size: 11px; font-weight: 500;
+    }
+    .examples-section { margin-bottom: 16px; }
+    .examples-label {
+      font-size: 12px; font-weight: 600; color: #888;
+      margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .examples { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ex-chip {
+      background: white; border: 1px solid #e0e0e0;
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 12px; color: #444; cursor: pointer; transition: all 0.15s;
+    }
+    .ex-chip:hover { background: #00d09c; color: white; border-color: #00d09c; }
+    .chat-card {
+      background: white; border-radius: 16px;
+      border: 1px solid #e8eaed; overflow: hidden;
+    }
+    .messages {
+      padding: 18px; display: flex; flex-direction: column;
+      gap: 14px; min-height: 300px; max-height: 480px; overflow-y: auto;
+    }
+    .msg { display: flex; flex-direction: column; gap: 4px; }
+    .msg.user { align-items: flex-end; }
+    .msg.bot { align-items: flex-start; }
+    .bubble {
+      border-radius: 14px; padding: 11px 15px;
+      font-size: 13.5px; line-height: 1.6; max-width: 88%;
+    }
+    .msg.user .bubble { background: #00d09c; color: white; border-bottom-right-radius: 4px; }
+    .msg.bot .bubble {
+      background: #f5f7fa; color: #1a1a2e;
+      border-bottom-left-radius: 4px; border: 1px solid #e8eaed;
+    }
+    .msg.bot .bubble.refuse { border-left: 3px solid #ffa726; background: #fffbf4; }
+    .cite-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: #0066cc; text-decoration: none;
+      background: #f0f6ff; border: 1px solid #cce0ff;
+      border-radius: 20px; padding: 3px 10px; margin-top: 2px;
+    }
+    .cite-link:hover { text-decoration: underline; }
+    .ts { font-size: 10px; color: #aaa; }
+    .input-row {
+      display: flex; gap: 8px; padding: 12px 16px;
+      border-top: 1px solid #f0f0f0; background: #fafafa;
+    }
+    .q-input {
+      flex: 1; border: 1px solid #dde1e7; border-radius: 10px;
+      padding: 10px 14px; font-size: 13.5px; font-family: inherit;
+      background: white; color: #1a1a2e; outline: none; transition: border 0.15s;
+    }
+    .q-input:focus { border-color: #00d09c; }
+    .send-btn {
+      background: #00d09c; color: white; border: none;
+      border-radius: 10px; padding: 10px 20px;
+      font-size: 14px; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .send-btn:hover { background: #00b386; }
+    .send-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .dot { display: inline-block; animation: blink 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+    .footer { text-align: center; font-size: 11px; color: #aaa; margin-top: 14px; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo-row">
+      <div class="groww-logo">G</div>
+      <span class="app-title">Mutual Fund FAQ Assistant</span>
+    </div>
+    <div class="app-sub">Facts-only answers about SBI Mutual Fund schemes · No investment advice</div>
+    <span class="disclaimer">&#9432; Facts only &nbsp;|&nbsp; No investment advice &nbsp;|&nbsp; Always verify at AMC / SEBI</span>
+  </div>
+
+  <div class="scope">
+    <span class="scope-label">Scope →</span>
+    <span class="scope-tag">SBI Bluechip Fund</span>
+    <span class="scope-tag">SBI Flexicap Fund</span>
+    <span class="scope-tag">SBI Long Term Equity (ELSS)</span>
+    <span style="margin-left:auto;font-size:11px;color:#999;">AMC: SBI Mutual Fund</span>
+  </div>
+
+  <div class="examples-section">
+    <div class="examples-label">Try asking:</div>
+    <div class="examples">
+      <span class="ex-chip" onclick="askQ('What is the expense ratio of SBI Bluechip Fund?')">Expense ratio of SBI Bluechip?</span>
+      <span class="ex-chip" onclick="askQ('What is the exit load for SBI Flexicap Fund?')">Exit load of Flexicap?</span>
+      <span class="ex-chip" onclick="askQ('What is the ELSS lock-in period?')">ELSS lock-in period?</span>
+      <span class="ex-chip" onclick="askQ('Minimum SIP amount for SBI Bluechip Fund?')">Min SIP amount?</span>
+      <span class="ex-chip" onclick="askQ('How do I download capital gains statement on Groww?')">Download CG statement?</span>
+      <span class="ex-chip" onclick="askQ('What is the riskometer rating of SBI ELSS?')">ELSS riskometer?</span>
+      <span class="ex-chip" onclick="askQ('Which fund benchmark does SBI Flexicap track?')">Flexicap benchmark?</span>
+    </div>
+  </div>
+
+  <div class="chat-card">
+    <div class="messages" id="messages">
+      <div class="msg bot">
+        <div class="bubble">
+          👋 Hello! Ask me factual questions about SBI Mutual Fund schemes available on Groww — expense ratios, exit loads, SIP minimums, ELSS lock-in, riskometer, benchmarks, or how to download statements.<br><br>
+          <strong>Facts only. No investment advice.</strong>
+        </div>
+        <span class="ts">Last updated from sources: Jun 2025</span>
+      </div>
+    </div>
+    <div class="input-row">
+      <input class="q-input" id="qInput" type="text" placeholder="Ask a factual question about MF schemes..." maxlength="250" />
+      <button class="send-btn" id="sendBtn" onclick="handleSend()">Ask ↗</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    Sources: SBI MF · AMFI · SEBI · Groww Support · MF Central<br>
+    This tool provides facts only. It is not SEBI-registered financial advice.
+  </div>
+</div>
+
+<script>
+const KB = [
+  {
+    patterns: ['expense ratio','ter','total expense','annual fee','management fee'],
+    schemes: {
+      'bluechip': { fact: 'SBI Bluechip Fund (Regular Plan) has an expense ratio of ~1.59% p.a. The Direct Plan has a lower TER of ~0.84% p.a. TER is reviewed monthly per SEBI norms.', url: 'https://www.sbimf.com/en-us/sbi-bluechip-fund', label: 'SBI MF – Bluechip Fund page' },
+      'flexicap': { fact: 'SBI Flexicap Fund (Regular Plan) has an expense ratio of ~1.69% p.a. The Direct Plan TER is ~0.94% p.a.', url: 'https://www.sbimf.com/en-us/sbi-flexicap-fund', label: 'SBI MF – Flexicap Fund page' },
+      'elss': { fact: 'SBI Long Term Equity Fund / ELSS (Regular Plan) has an expense ratio of ~1.72% p.a. Direct Plan TER is ~0.87% p.a.', url: 'https://www.sbimf.com/en-us/sbi-long-term-equity-fund', label: 'SBI MF – ELSS Fund page' }
+    },
+    defaultFact: 'Expense ratios: SBI Bluechip Regular ~1.59%, Flexicap Regular ~1.69%, ELSS Regular ~1.72%. Direct Plans are lower. TER is updated monthly by SEBI mandate.',
+    defaultUrl: 'https://www.amfiindia.com/nav-history-download', defaultLabel: 'AMFI – TER & NAV data'
+  },
+  {
+    patterns: ['exit load','redemption charge','exit charge','exit fee'],
+    schemes: {
+      'bluechip': { fact: 'SBI Bluechip Fund charges an exit load of 1% if redeemed within 12 months from allotment date. No exit load after 12 months.', url: 'https://www.sbimf.com/en-us/sbi-bluechip-fund', label: 'SBI MF – Bluechip Fund page' },
+      'flexicap': { fact: 'SBI Flexicap Fund has an exit load of 0.5% if redeemed within 30 days. No exit load after 30 days from allotment.', url: 'https://www.sbimf.com/en-us/sbi-flexicap-fund', label: 'SBI MF – Flexicap Fund page' },
+      'elss': { fact: 'SBI Long Term Equity Fund (ELSS) has a mandatory 3-year lock-in. After lock-in, there is no exit load on redemption.', url: 'https://www.sbimf.com/en-us/sbi-long-term-equity-fund', label: 'SBI MF – ELSS Fund page' }
+    },
+    defaultFact: 'Exit loads: SBI Bluechip — 1% within 12 months. SBI Flexicap — 0.5% within 30 days. SBI ELSS — 3-year lock-in; no exit load post lock-in.',
+    defaultUrl: 'https://www.sbimf.com/en-us/investor-services/terms', defaultLabel: 'SBI MF – Investor Services'
+  },
+  {
+    patterns: ['lock-in','lockin','lock in','elss lock','3 year','80c','tax sav'],
+    schemes: {},
+    defaultFact: 'ELSS has a mandatory 3-year lock-in as per Section 80C of the Income Tax Act. SBI Long Term Equity Fund is an ELSS. Partial redemption is not allowed during lock-in.',
+    defaultUrl: 'https://www.sebi.gov.in/legal/circulars/jun-2017/categorization-and-rationalization-of-mutual-fund-schemes_34743.html', defaultLabel: 'SEBI – MF Categorisation Circular'
+  },
+  {
+    patterns: ['minimum sip','min sip','sip amount','sip minimum','sip start','start sip'],
+    schemes: {
+      'bluechip': { fact: 'SBI Bluechip Fund has a minimum SIP amount of ₹500 per month on Groww. Minimum lump sum is ₹5,000.', url: 'https://groww.in/mutual-funds/sbi-blue-chip-fund-direct-plan-growth', label: 'Groww – SBI Bluechip Fund' },
+      'flexicap': { fact: 'SBI Flexicap Fund has a minimum SIP of ₹500 per month on Groww. Minimum lump sum is ₹5,000.', url: 'https://groww.in/mutual-funds/sbi-magnum-multicap-fund-direct-plan-growth', label: 'Groww – SBI Flexicap Fund' },
+      'elss': { fact: 'SBI Long Term Equity Fund (ELSS) accepts SIP starting from ₹500 per month on Groww. Minimum lump sum is ₹500.', url: 'https://groww.in/mutual-funds/sbi-magnum-tax-gain-fund', label: 'Groww – SBI ELSS Fund' }
+    },
+    defaultFact: 'Minimum SIP for all three SBI schemes on Groww is ₹500/month. Minimum lump sum: ₹500–₹5,000 depending on scheme.',
+    defaultUrl: 'https://groww.in/mutual-funds/filter?amc=sbi', defaultLabel: 'Groww – SBI MF Schemes'
+  },
+  {
+    patterns: ['riskometer','risk level','risk category','risk rating'],
+    schemes: {
+      'bluechip': { fact: 'SBI Bluechip Fund is rated "Very High Risk" on the SEBI riskometer. It is a large-cap equity fund investing in the top 100 stocks by market cap.', url: 'https://www.sbimf.com/en-us/sbi-bluechip-fund', label: 'SBI MF – Bluechip KIM' },
+      'flexicap': { fact: 'SBI Flexicap Fund is rated "Very High Risk" on the SEBI riskometer. It invests across large, mid, and small-cap stocks.', url: 'https://www.sbimf.com/en-us/sbi-flexicap-fund', label: 'SBI MF – Flexicap KIM' },
+      'elss': { fact: 'SBI Long Term Equity Fund (ELSS) is rated "Very High Risk" on the riskometer due to its 100% equity portfolio.', url: 'https://www.sbimf.com/en-us/sbi-long-term-equity-fund', label: 'SBI MF – ELSS KIM' }
+    },
+    defaultFact: 'All three SBI schemes (Bluechip, Flexicap, ELSS) are rated "Very High Risk" on the SEBI riskometer.',
+    defaultUrl: 'https://www.sebi.gov.in/legal/circulars/oct-2020/product-labeling-in-mutual-funds_48001.html', defaultLabel: 'SEBI – Riskometer Guidelines'
+  },
+  {
+    patterns: ['benchmark','nifty','sensex','tracked index'],
+    schemes: {
+      'bluechip': { fact: 'SBI Bluechip Fund benchmarks against the Nifty 100 TRI (Total Return Index) as per its Scheme Information Document.', url: 'https://www.sbimf.com/en-us/sbi-bluechip-fund', label: 'SBI MF – Bluechip SID' },
+      'flexicap': { fact: 'SBI Flexicap Fund is benchmarked against the Nifty 500 TRI, reflecting its multi-cap investment universe.', url: 'https://www.sbimf.com/en-us/sbi-flexicap-fund', label: 'SBI MF – Flexicap SID' },
+      'elss': { fact: 'SBI Long Term Equity Fund (ELSS) benchmarks against the Nifty 500 TRI as its performance reference index.', url: 'https://www.sbimf.com/en-us/sbi-long-term-equity-fund', label: 'SBI MF – ELSS SID' }
+    },
+    defaultFact: 'Benchmarks: SBI Bluechip → Nifty 100 TRI. SBI Flexicap → Nifty 500 TRI. SBI ELSS → Nifty 500 TRI.',
+    defaultUrl: 'https://mfcentral.com', defaultLabel: 'MF Central – Scheme Documents'
+  },
+  {
+    patterns: ['capital gains','cg statement','tax statement','download statement','account statement','cas'],
+    schemes: {},
+    defaultFact: 'On Groww: Go to Profile → Reports → Capital Gains Statement. Select the financial year and download PDF. Alternatively, get CAS from CAMS or KFintech using your PAN.',
+    defaultUrl: 'https://support.groww.in/hc/en-us/articles/360027553551', defaultLabel: 'Groww Support – Download Statement'
+  },
+  {
+    patterns: ['nav','net asset value','price per unit','current nav'],
+    schemes: {},
+    defaultFact: 'NAV is declared daily by 11 PM IST for equity funds. Check the latest NAV on AMFI\'s official website or Groww\'s scheme page.',
+    defaultUrl: 'https://www.amfiindia.com/nav-history-download', defaultLabel: 'AMFI – NAV Download'
+  },
+  {
+    patterns: ['sid','scheme information','kim','key information','factsheet'],
+    schemes: {},
+    defaultFact: 'SIDs and KIMs for SBI MF schemes are publicly available on the SBI MF website and AMFI. These detail fund objective, risk, costs, loads, and more.',
+    defaultUrl: 'https://www.sbimf.com/en-us/downloads', defaultLabel: 'SBI MF – Official Downloads'
+  },
+  {
+    patterns: ['direct plan','regular plan','direct vs regular'],
+    schemes: {},
+    defaultFact: 'Direct Plans have no distributor commission and lower expense ratios than Regular Plans. On Groww, you invest in Direct Plans by default. TER difference is typically 0.5–1% p.a.',
+    defaultUrl: 'https://www.sebi.gov.in/legal/circulars/sep-2012/direct-plan-for-schemes-of-mutual-funds_25621.html', defaultLabel: 'SEBI – Direct Plan Circular'
+  }
+];
+
+const ADVICE = ['should i','should i buy','should i sell','which is better','best for me','recommend','worth investing','good investment','best fund','compare returns','should i switch','where should i invest'];
+
+function detectScheme(q) {
+  const l = q.toLowerCase();
+  if (l.includes('bluechip') || l.includes('blue chip')) return 'bluechip';
+  if (l.includes('flexicap') || l.includes('flexi cap') || l.includes('multicap')) return 'flexicap';
+  if (l.includes('elss') || l.includes('long term equity') || l.includes('80c') || l.includes('tax sav')) return 'elss';
+  return null;
+}
+
+function findAnswer(q) {
+  const l = q.toLowerCase();
+  for (const item of KB) {
+    if (item.patterns.some(p => l.includes(p))) {
+      const scheme = detectScheme(q);
+      if (scheme && item.schemes && item.schemes[scheme]) return item.schemes[scheme];
+      return { fact: item.defaultFact, url: item.defaultUrl, label: item.defaultLabel };
+    }
+  }
+  return null;
+}
+
+function isAdvice(q) { return ADVICE.some(p => q.toLowerCase().includes(p)); }
+function nowTime() { return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }); }
+
+function addMsg(role, html, cite, refuse) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble' + (refuse ? ' refuse' : '');
+  bubble.innerHTML = html;
+  div.appendChild(bubble);
+  if (cite) {
+    const a = document.createElement('a');
+    a.className = 'cite-link'; a.href = cite.url; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = '🔗 ' + cite.label;
+    div.appendChild(a);
+  }
+  const ts = document.createElement('span');
+  ts.className = 'ts';
+  ts.textContent = role === 'bot' ? 'Last updated from sources: Jun 2025 · ' + nowTime() : nowTime();
+  div.appendChild(ts);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showLoading() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot'; div.id = 'loading';
+  const b = document.createElement('div'); b.className = 'bubble';
+  b.innerHTML = '<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+  div.appendChild(b); msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeLoading() { const el = document.getElementById('loading'); if (el) el.remove(); }
+
+function handleSend() {
+  const inp = document.getElementById('qInput');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  addMsg('user', q, null, false);
+  document.getElementById('sendBtn').disabled = true;
+  showLoading();
+  setTimeout(() => {
+    removeLoading();
+    if (isAdvice(q)) {
+      addMsg('bot', '⚠️ I cannot provide investment advice or fund comparisons. This assistant answers <strong>factual questions only</strong> — expense ratios, exit loads, SIP minimums, lock-in rules. For performance data, refer to the official factsheet.', { url: 'https://www.sbimf.com/en-us/downloads', label: 'SBI MF – Official Factsheets' }, true);
+    } else {
+      const ans = findAnswer(q);
+      if (ans) {
+        addMsg('bot', ans.fact, { url: ans.url, label: ans.label }, false);
+      } else {
+        addMsg('bot', 'I could not find a fact-based answer in my scope (SBI Bluechip, Flexicap, ELSS). Try: <strong>expense ratio, exit load, SIP minimum, ELSS lock-in, riskometer, benchmark, or statement download.</strong>', { url: 'https://www.amfiindia.com/mutual-fund', label: 'AMFI – Mutual Fund Info' }, false);
+      }
+    }
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('qInput').focus();
+  }, 600);
+}
+
+function askQ(q) { document.getElementById('qInput').value = q; handleSend(); }
+document.getElementById('qInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
+</script>
+</body>
+</html>
